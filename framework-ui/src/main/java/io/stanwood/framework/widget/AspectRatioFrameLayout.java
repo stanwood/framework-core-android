@@ -1,9 +1,8 @@
-package io.stanwood.framework.ui.widgets;
+package io.stanwood.framework.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import io.stanwood.framework.ui.R;
@@ -62,30 +61,18 @@ public class AspectRatioFrameLayout extends FrameLayout {
     }
 
     public void setWidthAspectRatio(float ratio) {
-        widthAspectRatio = ratio;
+        this.widthAspectRatio = ratio;
     }
 
     public void setHeightAspectRatio(float ratio) {
-        heightAspectRatio = ratio;
+        this.heightAspectRatio = ratio;
     }
 
-    @Override
-    public LayoutParams generateLayoutParams(AttributeSet attrs) {
-        return new LayoutParams(getContext(), attrs);
+    public void setWidthRelativeTo(int relativeTo) {
+        widthRelativeTo = relativeTo;
     }
 
-    @Override
-    protected LayoutParams generateDefaultLayoutParams() {
-        return new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-    }
-
-    @Override
-    protected ViewGroup.LayoutParams generateLayoutParams(ViewGroup.LayoutParams p) {
-        return new MarginLayoutParams(p);
-    }
-
-    @Override
-    protected boolean checkLayoutParams(ViewGroup.LayoutParams p) {
-        return p instanceof MarginLayoutParams;
+    public void setHeightRelativeTo(int relativeTo) {
+        this.heightRelativeTo = heightRelativeTo;
     }
 }
