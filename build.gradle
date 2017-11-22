@@ -21,7 +21,17 @@ allprojects {
         google()
         jcenter()
     }
+
+    project.ext {
+        BuildToolsVersion = "26.0.2"
+        MinSdkVersion=21
+        TargetSdkVersion = 26
+        CompileSdkVersion = 26
+        SupportLibVersion = '26.1.0'
+    }
 }
+
+
 
 task clean(type: Delete) {
     delete rootProject.buildDir
