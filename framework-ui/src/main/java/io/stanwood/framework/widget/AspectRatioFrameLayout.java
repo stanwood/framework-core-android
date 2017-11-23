@@ -2,21 +2,26 @@ package io.stanwood.framework.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import io.stanwood.framework.ui.R;
 
 
 public class AspectRatioFrameLayout extends FrameLayout {
-
-    final private static int RELATIVE_TO_WIDTH = 0;
-    final private static int RELATIVE_TO_HEIGHT = 1;
-
-    private int widthRelativeTo = -1;
+    final public static int RELATIVE_TO_NONE = -1;
+    final public static int RELATIVE_TO_WIDTH = 0;
+    final public static int RELATIVE_TO_HEIGHT = 1;
+    @RelativeTo
+    private int widthRelativeTo = RELATIVE_TO_NONE;
     private float widthAspectRatio = 1;
-    private int heightRelativeTo = -1;
-    private float heightAspectRatio = -1;
+    @RelativeTo
+    private int heightRelativeTo = RELATIVE_TO_NONE;
+    private float heightAspectRatio = 1.77f;
 
     public AspectRatioFrameLayout(Context context) {
         this(context, null);
@@ -31,9 +36,9 @@ public class AspectRatioFrameLayout extends FrameLayout {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AspectRatioFrameLayout, 0, 0);
         widthRelativeTo = a.getInt(R.styleable.AspectRatioFrameLayout_width_relative_to, widthRelativeTo);
         widthAspectRatio = a.getFloat(R.styleable.AspectRatioFrameLayout_width_aspectRatio, widthAspectRatio);
-        if (widthRelativeTo == -1) {
-            heightRelativeTo = a.getInt(R.styleable.AspectRatioFrameLayout_height_relative_to, RELATIVE_TO_WIDTH);
-            heightAspectRatio = a.getFloat(R.styleable.AspectRatioFrameLayout_height_aspectRatio, 1.77f);
+        if (widthRelativeTo == RELATIVE_TO_NONE) {
+            heightRelativeTo = a.getInt(R.styleable.AspectRatioFrameLayout_height_relative_to, heightRelativeTo);
+            heightAspectRatio = a.getFloat(R.styleable.AspectRatioFrameLayout_height_aspectRatio, heightAspectRatio);
         }
         a.recycle();
     }
@@ -60,19 +65,46 @@ public class AspectRatioFrameLayout extends FrameLayout {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    public void setWidthAspectRatio(float ratio) {
-        this.widthAspectRatio = ratio;
+    public int getIsRelativeTo() {
+        return heightRelativeTo;
+    }
+
+    public float getHeightAspectRatio() {
+        return heightAspectRatio;
     }
 
     public void setHeightAspectRatio(float ratio) {
         this.heightAspectRatio = ratio;
     }
 
-    public void setWidthRelativeTo(int relativeTo) {
-        widthRelativeTo = relativeTo;
+    public float getWidthAspectRatio() {
+        return widthAspectRatio;
     }
 
-    public void setHeightRelativeTo(int relativeTo) {
-        this.heightRelativeTo = heightRelativeTo;
+    public void setWidthAspectRatio(float ratio) {
+        this.widthAspectRatio = ratio;
+    }
+
+    @RelativeTo
+    public int getHeightRelativeTo() {
+        return heightRelativeTo;
+    }
+
+    public void setHeightRelativeTo(@RelativeTo int relativeTo) {
+        this.heightRelativeTo = relativeTo;
+    }
+
+    @RelativeTo
+    public int getWidthRelativeTo() {
+        return widthRelativeTo;
+    }
+
+    public void setWidthRelativeTo(@RelativeTo int relativeTo) {
+        this.widthRelativeTo = relativeTo;
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({RELATIVE_TO_NONE, RELATIVE_TO_WIDTH, RELATIVE_TO_HEIGHT})
+    public @interface RelativeTo {
     }
 }

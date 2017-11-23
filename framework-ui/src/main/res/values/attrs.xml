@@ -16,4 +16,8 @@
         <attr name="width_aspectRatio" />
         <attr name="height_aspectRatio" />
     </declare-styleable>
+
+    <declare-styleable name="StatusBarScrimLayout">
+        <attr name="scrimColor" format="reference"/>
+    </declare-styleable>
 </resources>
