@@ -4,18 +4,6 @@ apply plugin: 'com.github.dcendents.android-maven'
 android {
     compileSdkVersion project.ext.CompileSdkVersion
     buildToolsVersion project.ext.BuildToolsVersion
-    task sourcesJar(type: Jar) {
-        from android.sourceSets.main.java.srcDirs
-        classifier = 'sources'
-    }
-
-    task javadoc(type: Javadoc) {
-        failOnError  false
-        source = android.sourceSets.main.java.sourceFiles
-        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-        classpath += configurations.compile
-    }
-
     defaultConfig {
         minSdkVersion project.ext.MinSdkVersion
         targetSdkVersion project.ext.TargetSdkVersion
@@ -35,4 +23,29 @@ android {
 
 dependencies {
     implementation "com.android.support:support-annotations:$rootProject.ext.SupportLibVersion"
+}
+
+
+// build a jar with source files
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    failOnError  false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
+}
+
+// build a jar with javadoc
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
 }
