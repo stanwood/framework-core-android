@@ -50,8 +50,14 @@ public class AspectRatioFrameLayout extends FrameLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        final int width = MeasureSpec.getSize(widthMeasureSpec);
-        final int height = MeasureSpec.getSize(heightMeasureSpec);
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+        int height = MeasureSpec.getSize(heightMeasureSpec);
+        if (widthRelativeTo == RELATIVE_TO_WIDTH || heightRelativeTo == RELATIVE_TO_WIDTH) {
+            width -= getPaddingStart() + getPaddingEnd();
+        }
+        if (widthRelativeTo == RELATIVE_TO_HEIGHT || heightRelativeTo == RELATIVE_TO_HEIGHT) {
+            height -= getPaddingTop() + getPaddingBottom();
+        }
         if (widthRelativeTo == RELATIVE_TO_WIDTH) {
             widthMeasureSpec = MeasureSpec.makeMeasureSpec((int) (width / widthAspectRatio), MeasureSpec.EXACTLY);
         } else if (widthRelativeTo == RELATIVE_TO_HEIGHT) {

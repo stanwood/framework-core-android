@@ -2,13 +2,12 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
 android {
-    compileSdkVersion project.ext.CompileSdkVersion
-    buildToolsVersion project.ext.BuildToolsVersion
+    compileSdkVersion compileVersion
 
 
     defaultConfig {
-        minSdkVersion project.ext.MinSdkVersion
-        targetSdkVersion project.ext.TargetSdkVersion
+        minSdkVersion minVersion
+        targetSdkVersion targetVersion
         versionCode 1
         versionName "1.0"
     }
@@ -23,7 +22,7 @@ android {
 }
 
 dependencies {
-    implementation "com.android.support:support-annotations:$rootProject.ext.SupportLibVersion"
+    implementation "com.android.support:support-annotations:$supportLibVersion"
 }
 
 
