@@ -2,7 +2,7 @@
 
 buildscript {
 
-        ext.minVersion=21
+        ext.minVersion=16
         ext.targetVersion = 27
         ext.compileVersion = 27
         ext.supportLibVersion = '27.1.1'
