@@ -5,17 +5,19 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.WindowInsetsCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowInsets;
 import android.widget.FrameLayout;
 
 import io.stanwood.framework.ui.R;
 
 public class StatusBarScrimLayout extends ViewGroup {
-    private WindowInsets lastWindowInsets;
+    private WindowInsetsCompat lastWindowInsets;
     private Drawable statusBarScrim;
     private Rect insets = new Rect();
     private Rect tmpRect = new Rect();
@@ -34,12 +36,16 @@ public class StatusBarScrimLayout extends ViewGroup {
                 R.styleable.StatusBarScrimLayout, defStyle, 0);
         statusBarScrim = a.getDrawable(R.styleable.StatusBarScrimLayout_scrimColor);
         a.recycle();
-        setOnApplyWindowInsetsListener(new OnApplyWindowInsetsListener() {
-            @Override
-            public WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
-                return onWindowInsetChanged(insets);
-            }
-        });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            ViewCompat.setOnApplyWindowInsetsListener(this, new android.support.v4.view.OnApplyWindowInsetsListener() {
+                @Override
+                public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
+                    return onWindowInsetChanged(insets);
+                }
+            });
+        }
+
     }
 
     public void setStatusBarScrim(@Nullable Drawable statusBarScrim) {
@@ -80,7 +86,7 @@ public class StatusBarScrimLayout extends ViewGroup {
                 childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(
                         heightSize - vertInsets, heightMode);
             } else if (applyInsets && child.getFitsSystemWindows()) {
-                child.dispatchApplyWindowInsets(lastWindowInsets);
+                ViewCompat.dispatchApplyWindowInsets(child, lastWindowInsets);
             }
             onMeasureChild(child, childWidthMeasureSpec, 0, childHeightMeasureSpec, 0);
             final MarginLayoutParams lp = (MarginLayoutParams) child.getLayoutParams();
@@ -118,8 +124,8 @@ public class StatusBarScrimLayout extends ViewGroup {
         return p instanceof MarginLayoutParams;
     }
 
-    WindowInsets onWindowInsetChanged(final WindowInsets insetsCompat) {
-        WindowInsets newInsets = null;
+    WindowInsetsCompat onWindowInsetChanged(final WindowInsetsCompat insetsCompat) {
+        WindowInsetsCompat newInsets = null;
         if (getFitsSystemWindows()) {
             newInsets = insetsCompat;
         }
