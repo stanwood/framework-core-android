@@ -196,7 +196,7 @@ public class StatusBarScrimLayout extends ViewGroup {
             View child = getChildAt(i);
             int top = t;
             int left = l;
-            if (applyInsets && !getFitsSystemWindows()) {
+            if (applyInsets && !child.getFitsSystemWindows()) {
                 if (statusBarScrim != null) {
                     top += insets.top;
                 }
