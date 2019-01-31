@@ -1,27 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="width_aspectRatio" format="float" />
-    <attr name="height_aspectRatio" format="float" />
-    <attr name="width_relative_to">
-        <enum name="width" value="0" />
-        <enum name="height" value="1" />
-    </attr>
-    <attr name="height_relative_to">
-        <enum name="width" value="0" />
-        <enum name="height" value="1" />
-    </attr>
-    <declare-styleable name="AspectRatioFrameLayout">
-        <attr name="width_relative_to" />
-        <attr name="height_relative_to" />
-        <attr name="width_aspectRatio" />
-        <attr name="height_aspectRatio" />
-    </declare-styleable>
-
-    <declare-styleable name="StatusBarScrimLayout">
-        <attr name="scrimColor" format="reference"/>
-    </declare-styleable>
-
-
     <item name="offset_helper" type="id" />
     <attr name="parallaxMode">
         <enum name="parallax" value="0" />
