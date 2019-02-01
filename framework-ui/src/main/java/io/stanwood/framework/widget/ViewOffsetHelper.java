@@ -1,8 +1,8 @@
 package io.stanwood.framework.widget;
 
-
-import android.support.v4.view.ViewCompat;
 import android.view.View;
+
+import androidx.core.view.ViewCompat;
 
 public class ViewOffsetHelper {
 
@@ -32,7 +32,7 @@ public class ViewOffsetHelper {
     }
 
     /**
-     * Set the top and bottom offset for this {@link android.support.design.widget.ViewOffsetHelper}'s view.
+     * Set the top and bottom offset for this {@link ViewOffsetHelper}'s view.
      *
      * @param offset the offset in px.
      * @return true if the offset has changed
@@ -47,7 +47,7 @@ public class ViewOffsetHelper {
     }
 
     /**
-     * Set the left and right offset for this {@link android.support.design.widget.ViewOffsetHelper}'s view.
+     * Set the left and right offset for this {@link ViewOffsetHelper}'s view.
      *
      * @param offset the offset in px.
      * @return true if the offset has changed

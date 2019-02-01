@@ -6,14 +6,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.WindowInsetsCompat;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
-import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +13,15 @@ import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.google.android.material.appbar.AppBarLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
+import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 import io.stanwood.framework.ui.R;
 
 
@@ -46,7 +47,7 @@ public class ParallaxToolbarLayout extends FrameLayout {
     private AppBarLayout.OnOffsetChangedListener mOnOffsetChangedListener;
     private View floatingToolbar;
     private TextView floatingToolbarTitle;
-    private TextView title;
+    private View title;
     private int titleViewId;
     private int floatingToolbarId;
     private int floatingToolbarTitleId;
@@ -70,10 +71,9 @@ public class ParallaxToolbarLayout extends FrameLayout {
         a.recycle();
         setWillNotDraw(false);
         ViewCompat.setOnApplyWindowInsetsListener(this,
-                new android.support.v4.view.OnApplyWindowInsetsListener() {
+                new androidx.core.view.OnApplyWindowInsetsListener() {
                     @Override
-                    public WindowInsetsCompat onApplyWindowInsets(View v,
-                                                                  WindowInsetsCompat insets) {
+                    public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
                         return onWindowInsetChanged(insets);
                     }
                 });
@@ -156,8 +156,7 @@ public class ParallaxToolbarLayout extends FrameLayout {
         if (statusBarScrim != null && scrimAlpha > 0) {
             final int topInset = lastInsets != null ? lastInsets.getSystemWindowInsetTop() : 0;
             if (topInset > 0) {
-                statusBarScrim.setBounds(0, -currentOffset, getWidth(),
-                        topInset - currentOffset);
+                statusBarScrim.setBounds(0, -currentOffset, getWidth(), topInset - currentOffset);
                 statusBarScrim.mutate().setAlpha(scrimAlpha);
                 statusBarScrim.draw(canvas);
             }
@@ -188,7 +187,7 @@ public class ParallaxToolbarLayout extends FrameLayout {
         return super.drawChild(canvas, child, drawingTime) || invalidated;
     }
 
-    public TextView getToolbarTitle() {
+    public View getToolbarTitle() {
         ensureToolbar();
         return title;
     }
@@ -406,8 +405,7 @@ public class ParallaxToolbarLayout extends FrameLayout {
                 if (statusBarScrim.isStateful()) {
                     statusBarScrim.setState(getDrawableState());
                 }
-                DrawableCompat.setLayoutDirection(statusBarScrim,
-                        ViewCompat.getLayoutDirection(this));
+                DrawableCompat.setLayoutDirection(statusBarScrim, ViewCompat.getLayoutDirection(this));
                 statusBarScrim.setVisible(getVisibility() == VISIBLE, false);
                 statusBarScrim.setCallback(this);
                 statusBarScrim.setAlpha(scrimAlpha);
