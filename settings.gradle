@@ -1,1 +1,1 @@
-include ':framework-ui', ':framework-databinding', ':framework-base'
+include ':ui', ':databinding', ':base'
