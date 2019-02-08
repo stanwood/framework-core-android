@@ -1,4 +1,4 @@
-package io.stanwood.framework.widget;
+package io.stanwood.framework.ui.widget;
 
 
 import android.animation.ValueAnimator;

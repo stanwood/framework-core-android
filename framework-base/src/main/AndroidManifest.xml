@@ -1,2 +1,2 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="io.stanwood.framework.content"/>
+          package="io.stanwood.framework.base"/>
