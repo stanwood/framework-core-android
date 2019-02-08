@@ -14,14 +14,14 @@ object LayoutBindingAdapter {
      */
     @JvmStatic
     @BindingAdapter(value = ["android:layout_width", "layout_width_wrap_content_condition"])
-    fun setLayoutWidthWrapContentIfConditionMet(view: View, width: Float, condition: Boolean) {
-        view.layoutParams = if (condition) {
+    fun setLayoutWidthWrapContentIfConditionMet(view: View, width: Float?, condition: Boolean?) {
+        view.layoutParams = if (condition == true) {
             view.layoutParams?.apply {
                 this.width = ViewGroup.LayoutParams.WRAP_CONTENT
             }
         } else {
-            view.layoutParams.apply {
-                this.width = width.toInt()
+            view.layoutParams?.apply {
+                this.width = width?.toInt() ?: 0
             }
         }
     }
@@ -35,14 +35,14 @@ object LayoutBindingAdapter {
      */
     @JvmStatic
     @BindingAdapter(value = ["android:layout_height", "layout_height_wrap_content_condition"])
-    fun setLayoutHeightWrapContentIfConditionMet(view: View, height: Float, condition: Boolean) {
-        view.layoutParams = if (condition) {
+    fun setLayoutHeightWrapContentIfConditionMet(view: View, height: Float?, condition: Boolean?) {
+        view.layoutParams = if (condition == true) {
             view.layoutParams?.apply {
                 this.height = ViewGroup.LayoutParams.WRAP_CONTENT
             }
         } else {
-            view.layoutParams.apply {
-                this.height = height.toInt()
+            view.layoutParams?.apply {
+                this.height = height?.toInt() ?: 0
             }
         }
     }
@@ -56,14 +56,14 @@ object LayoutBindingAdapter {
      */
     @JvmStatic
     @BindingAdapter(value = ["android:layout_width", "layout_width_match_parent_condition"])
-    fun setLayoutWidthMatchParentIfConditionMet(view: View, width: Float, condition: Boolean) {
-        view.layoutParams = if (condition) {
+    fun setLayoutWidthMatchParentIfConditionMet(view: View, width: Float?, condition: Boolean?) {
+        view.layoutParams = if (condition == true) {
             view.layoutParams?.apply {
                 this.width = ViewGroup.LayoutParams.MATCH_PARENT
             }
         } else {
-            view.layoutParams.apply {
-                this.width = width.toInt()
+            view.layoutParams?.apply {
+                this.width = width?.toInt() ?: 0
             }
         }
     }
@@ -77,14 +77,14 @@ object LayoutBindingAdapter {
      */
     @JvmStatic
     @BindingAdapter(value = ["android:layout_height", "layout_height_match_parent_condition"])
-    fun setLayoutHeightMatchParentIfConditionMet(view: View, height: Float, condition: Boolean) {
-        view.layoutParams = if (condition) {
+    fun setLayoutHeightMatchParentIfConditionMet(view: View, height: Float?, condition: Boolean?) {
+        view.layoutParams = if (condition == true) {
             view.layoutParams?.apply {
                 this.height = ViewGroup.LayoutParams.MATCH_PARENT
             }
         } else {
-            view.layoutParams.apply {
-                this.height = height.toInt()
+            view.layoutParams?.apply {
+                this.height = height?.toInt() ?: 0
             }
         }
     }
