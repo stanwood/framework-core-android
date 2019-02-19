@@ -21,6 +21,6 @@
         <attr name="floatingToolbarTitleTextView" format="reference"/>
     </declare-styleable>
     <declare-styleable name="InsetLayout">
-        <attr name="statusBarColor" format="color"/>
+        <attr name="statusBarBackground"/>
     </declare-styleable>
 </resources>

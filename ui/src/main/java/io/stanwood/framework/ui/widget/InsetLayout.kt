@@ -1,9 +1,10 @@
 package io.stanwood.framework.ui.widget
 
+
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Paint
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import androidx.core.view.ViewCompat
@@ -11,19 +12,19 @@ import androidx.core.view.WindowInsetsCompat
 import io.stanwood.framework.ui.R
 
 class InsetLayout
-@JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : FrameLayout(context, attrs, defStyle) {
+@JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0, defStyleRes: Int = 0) :
+    FrameLayout(context, attrs, defStyle, defStyleRes) {
     private var insets: WindowInsetsCompat? = null
     private val statusBarBounds = Rect()
-    private val statusBarPaint: Paint?
+    private var statusBarBackground: Drawable? = null
 
     init {
         fitsSystemWindows = true
-        val style = context.obtainStyledAttributes(attrs, R.styleable.InsetLayout)
-        statusBarPaint = style.getColor(R.styleable.InsetLayout_statusBarColor, 0)
-            .let {
-                if (it > 0) Paint().apply { color = it } else null
+        context.obtainStyledAttributes(attrs, R.styleable.InsetLayout, defStyle, defStyleRes)
+            ?.apply {
+                statusBarBackground = getDrawable(R.styleable.InsetLayout_statusBarBackground)
+                recycle()
             }
-        style.recycle()
         ViewCompat.setOnApplyWindowInsetsListener(this)
         { _, insets ->
             this.insets = WindowInsetsCompat(insets)
@@ -55,10 +56,11 @@ class InsetLayout
         statusBarBounds.right = measuredWidth
     }
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        if (statusBarPaint != null && statusBarBounds.height() > 0) {
-            canvas?.drawRect(statusBarBounds, statusBarPaint)
+        statusBarBackground?.apply {
+            bounds = statusBarBounds
+            draw(canvas)
         }
     }
 }
