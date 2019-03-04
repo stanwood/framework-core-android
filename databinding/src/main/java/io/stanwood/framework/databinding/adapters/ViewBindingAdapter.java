@@ -10,12 +10,16 @@ import androidx.databinding.BindingAdapter;
 public class ViewBindingAdapter {
     @BindingAdapter(value = {"android:visibility"})
     public static void setVisibileOrGone(View view, @Nullable Boolean visible) {
-        view.setVisibility(visible ? View.VISIBLE : View.GONE);
+        if (visible != null) {
+            view.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
     }
 
     @BindingAdapter(value = {"visibleOrInvisible"})
     public static void setVisibileOrInvisible(View view, @Nullable Boolean visible) {
-        view.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        if (visible != null) {
+            view.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        }
     }
 
     /**

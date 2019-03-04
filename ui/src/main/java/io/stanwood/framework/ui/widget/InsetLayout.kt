@@ -1,64 +1,75 @@
 package io.stanwood.framework.ui.widget
 
+
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Rect
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.view.View
 import android.widget.FrameLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import io.stanwood.framework.ui.R
 
-class InsetLayout
-@JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) : FrameLayout(context, attrs, defStyle) {
-    private var insets: WindowInsetsCompat? = null
-    private val statusBarBounds = Rect()
-    private val statusBarPaint: Paint?
+class InsetLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0, defStyleRes: Int = 0) :
+    FrameLayout(context, attrs, defStyle, defStyleRes) {
+    private var lastInsets: WindowInsetsCompat? = null
+    private var statusBarBackground: Drawable? = null
 
     init {
         fitsSystemWindows = true
-        val style = context.obtainStyledAttributes(attrs, R.styleable.InsetLayout)
-        statusBarPaint = style.getColor(R.styleable.InsetLayout_statusBarColor, 0)
-            .let {
-                if (it > 0) Paint().apply { color = it } else null
+        context.obtainStyledAttributes(attrs, R.styleable.InsetLayout, defStyle, defStyleRes)
+            ?.apply {
+                statusBarBackground = getDrawable(R.styleable.InsetLayout_statusBarBackground)
+                recycle()
             }
-        style.recycle()
         ViewCompat.setOnApplyWindowInsetsListener(this)
         { _, insets ->
-            this.insets = WindowInsetsCompat(insets)
             onInsetsChanged(insets)
-            insets.consumeSystemWindowInsets()
+            insets
         }
+        systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
     }
 
     private fun onInsetsChanged(insets: WindowInsetsCompat) {
-        statusBarBounds.bottom = insets.systemWindowInsetTop
-        setWillNotDraw(statusBarBounds.height() <= 0 && background == null)
+        if (lastInsets != insets) {
+            lastInsets = insets
+            setWillNotDraw(insets.systemWindowInsetTop <= 0 && background == null)
+        }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         getChildAt(0)?.let {
+            val inset = lastInsets?.systemWindowInsetTop ?: 0
             setMeasuredDimension(it.measuredWidth,
                 if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY) {
                     MeasureSpec.getSize(heightMeasureSpec).apply {
                         it.measure(
                             widthMeasureSpec,
-                            MeasureSpec.makeMeasureSpec(this - statusBarBounds.height(), MeasureSpec.EXACTLY)
+                            MeasureSpec.makeMeasureSpec(this - inset, MeasureSpec.EXACTLY)
                         )
                     }
                 } else {
                     it.measure(widthMeasureSpec, heightMeasureSpec)
-                    it.measuredHeight + statusBarBounds.height()
+                    it.measuredHeight + inset
                 })
         }
-        statusBarBounds.right = measuredWidth
     }
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        if (statusBarPaint != null && statusBarBounds.height() > 0) {
-            canvas?.drawRect(statusBarBounds, statusBarPaint)
+        lastInsets?.apply {
+            statusBarBackground?.apply {
+                setBounds(0, 0, width, systemWindowInsetTop)
+                draw(canvas)
+            }
+        }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        if (lastInsets == null) {
+            ViewCompat.requestApplyInsets(this)
         }
     }
 }
