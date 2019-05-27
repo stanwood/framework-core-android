@@ -13,8 +13,6 @@ import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.google.android.material.appbar.AppBarLayout;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -22,6 +20,11 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
+
+import com.google.android.material.appbar.AppBarLayout;
+
+import java.security.MessageDigest;
+
 import io.stanwood.framework.ui.R;
 
 
@@ -212,13 +215,14 @@ public class ParallaxToolbarLayout extends FrameLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         ensureToolbar();
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        final int height = MeasureSpec.getSize(heightMeasureSpec);
+        final int mode = MeasureSpec.getMode(heightMeasureSpec);
+        super.onMeasure(widthMeasureSpec, (height == 0 && mode== MeasureSpec.EXACTLY) ? MeasureSpec.UNSPECIFIED: heightMeasureSpec );
         LayoutParams lp = (LayoutParams) getChildAt(0).getLayoutParams();
         if (lp.getParallaxMode() == COLLAPSE_MODE_BELOW_TOOLBAR) {
             setMeasuredDimension(getMeasuredWidth(), getMeasuredHeight() + toolbarLayout.getMeasuredHeight());
         }
 
-        final int mode = MeasureSpec.getMode(heightMeasureSpec);
         final int topInset = lastInsets != null ? lastInsets.getSystemWindowInsetTop() : 0;
         if (mode == MeasureSpec.UNSPECIFIED && topInset > 0) {
             // If we have a top inset and we're set to wrap_content height make sure top inset is added
