@@ -271,11 +271,11 @@ public class ParallaxToolbarLayout extends FrameLayout {
 
     public void setScrimsShown(boolean shown) {
         setScrimsShown(shown, !restorePending && ViewCompat.isLaidOut(this) && !isInEditMode());
-        restorePending = false;
     }
 
     public void setScrimsShown(boolean shown, boolean animate) {
         if (scrimsAreShown != shown) {
+            restorePending = false;
             if (animate) {
                 animateScrim(shown ? 255 : 0);
             } else {
