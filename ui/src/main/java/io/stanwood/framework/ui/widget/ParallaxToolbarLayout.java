@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +24,6 @@ import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 
 import com.google.android.material.appbar.AppBarLayout;
 
-import java.security.MessageDigest;
-
 import io.stanwood.framework.ui.R;
 
 
@@ -40,6 +39,7 @@ public class ParallaxToolbarLayout extends FrameLayout {
     WindowInsetsCompat lastInsets;
     Drawable statusBarScrim;
     Drawable contentScrim;
+    boolean restorePending = false;
     private int maxTitleTranslationX;
     private float titleTranslationX = 0;
     private boolean refreshToolbar = true;
@@ -167,6 +167,12 @@ public class ParallaxToolbarLayout extends FrameLayout {
     }
 
     @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        super.onRestoreInstanceState(state);
+        restorePending = true;
+    }
+
+    @Override
     protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
         boolean invalidated = false;
         if (contentScrim != null && isToolbarChild(child)) {
@@ -217,12 +223,12 @@ public class ParallaxToolbarLayout extends FrameLayout {
         ensureToolbar();
         final int height = MeasureSpec.getSize(heightMeasureSpec);
         final int mode = MeasureSpec.getMode(heightMeasureSpec);
-        super.onMeasure(widthMeasureSpec, (height == 0 && mode== MeasureSpec.EXACTLY) ? MeasureSpec.UNSPECIFIED: heightMeasureSpec );
+        // If height is explicit set to 0 measure as wrap content , so insets are not added to height
+        super.onMeasure(widthMeasureSpec, (height == 0 && mode == MeasureSpec.EXACTLY) ? MeasureSpec.UNSPECIFIED : heightMeasureSpec);
         LayoutParams lp = (LayoutParams) getChildAt(0).getLayoutParams();
         if (lp.getParallaxMode() == COLLAPSE_MODE_BELOW_TOOLBAR) {
             setMeasuredDimension(getMeasuredWidth(), getMeasuredHeight() + toolbarLayout.getMeasuredHeight());
         }
-
         final int topInset = lastInsets != null ? lastInsets.getSystemWindowInsetTop() : 0;
         if (mode == MeasureSpec.UNSPECIFIED && topInset > 0) {
             // If we have a top inset and we're set to wrap_content height make sure top inset is added
@@ -264,7 +270,8 @@ public class ParallaxToolbarLayout extends FrameLayout {
     }
 
     public void setScrimsShown(boolean shown) {
-        setScrimsShown(shown, ViewCompat.isLaidOut(this) && !isInEditMode());
+        setScrimsShown(shown, !restorePending && ViewCompat.isLaidOut(this) && !isInEditMode());
+        restorePending = false;
     }
 
     public void setScrimsShown(boolean shown, boolean animate) {
