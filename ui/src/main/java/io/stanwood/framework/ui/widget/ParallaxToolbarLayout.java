@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,7 @@ public class ParallaxToolbarLayout extends FrameLayout {
     WindowInsetsCompat lastInsets;
     Drawable statusBarScrim;
     Drawable contentScrim;
+    boolean isRestorePending;
     private int maxTitleTranslationX;
     private float titleTranslationX = 0;
     private boolean refreshToolbar = true;
@@ -139,6 +141,12 @@ public class ParallaxToolbarLayout extends FrameLayout {
             requestLayout();
         }
         return insets.consumeSystemWindowInsets();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        super.onRestoreInstanceState(state);
+        isRestorePending = true;
     }
 
     private boolean isToolbarChild(View child) {
@@ -258,7 +266,9 @@ public class ParallaxToolbarLayout extends FrameLayout {
         if (toolbarLayout != null) {
             setMinimumHeight(getHeightWithMargins(toolbarLayout));
         }
-        updateScrimVisibility();
+        if (!isRestorePending) {
+            updateScrimVisibility();
+        }
     }
 
     public void setScrimsShown(boolean shown) {
@@ -534,6 +544,7 @@ public class ParallaxToolbarLayout extends FrameLayout {
                 }
             }
             updateScrimVisibility();
+            isRestorePending = false;
             final int insetTop = lastInsets != null ? lastInsets.getSystemWindowInsetTop() : 0;
             if (statusBarScrim != null && insetTop > 0) {
                 ViewCompat.postInvalidateOnAnimation(ParallaxToolbarLayout.this);
@@ -547,4 +558,3 @@ public class ParallaxToolbarLayout extends FrameLayout {
         }
     }
 }
-
