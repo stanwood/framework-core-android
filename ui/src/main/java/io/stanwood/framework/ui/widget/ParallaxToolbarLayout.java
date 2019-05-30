@@ -272,7 +272,7 @@ public class ParallaxToolbarLayout extends FrameLayout {
     }
 
     public void setScrimsShown(boolean shown) {
-        setScrimsShown(shown, ViewCompat.isLaidOut(this) && !isInEditMode());
+        setScrimsShown(shown, !isRestorePending && ViewCompat.isLaidOut(this) && !isInEditMode());
     }
 
     public void setScrimsShown(boolean shown, boolean animate) {
@@ -544,7 +544,6 @@ public class ParallaxToolbarLayout extends FrameLayout {
                 }
             }
             updateScrimVisibility();
-            isRestorePending = false;
             final int insetTop = lastInsets != null ? lastInsets.getSystemWindowInsetTop() : 0;
             if (statusBarScrim != null && insetTop > 0) {
                 ViewCompat.postInvalidateOnAnimation(ParallaxToolbarLayout.this);
@@ -554,7 +553,7 @@ public class ParallaxToolbarLayout extends FrameLayout {
                 int minHeight = getMinimumHeight();
                 titleTranslationX = (float) (height - minHeight - insetTop + currentOffset) / (height - minHeight - insetTop);
             }
-
+            isRestorePending = false;
         }
     }
 }
