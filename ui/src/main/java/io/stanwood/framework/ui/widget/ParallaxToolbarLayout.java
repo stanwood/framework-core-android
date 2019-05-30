@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +38,6 @@ public class ParallaxToolbarLayout extends FrameLayout {
     WindowInsetsCompat lastInsets;
     Drawable statusBarScrim;
     Drawable contentScrim;
-    boolean restorePending = false;
     private int maxTitleTranslationX;
     private float titleTranslationX = 0;
     private boolean refreshToolbar = true;
@@ -167,12 +165,6 @@ public class ParallaxToolbarLayout extends FrameLayout {
     }
 
     @Override
-    protected void onRestoreInstanceState(Parcelable state) {
-        super.onRestoreInstanceState(state);
-        restorePending = true;
-    }
-
-    @Override
     protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
         boolean invalidated = false;
         if (contentScrim != null && isToolbarChild(child)) {
@@ -270,12 +262,11 @@ public class ParallaxToolbarLayout extends FrameLayout {
     }
 
     public void setScrimsShown(boolean shown) {
-        setScrimsShown(shown, !restorePending && ViewCompat.isLaidOut(this) && !isInEditMode());
+        setScrimsShown(shown, ViewCompat.isLaidOut(this) && !isInEditMode());
     }
 
     public void setScrimsShown(boolean shown, boolean animate) {
         if (scrimsAreShown != shown) {
-            restorePending = false;
             if (animate) {
                 animateScrim(shown ? 255 : 0);
             } else {
@@ -519,7 +510,6 @@ public class ParallaxToolbarLayout extends FrameLayout {
         @Override
         public void onOffsetChanged(AppBarLayout layout, int verticalOffset) {
             currentOffset = verticalOffset;
-
             for (int size = getChildCount(), i = 0; i < size; i++) {
                 final View child = getChildAt(i);
                 final ViewOffsetHelper offsetHelper = getViewOffsetHelper(child);
@@ -542,17 +532,18 @@ public class ParallaxToolbarLayout extends FrameLayout {
                         break;
                     }
                 }
-                updateScrimVisibility();
-                final int insetTop = lastInsets != null ? lastInsets.getSystemWindowInsetTop() : 0;
-                if (statusBarScrim != null && insetTop > 0) {
-                    ViewCompat.postInvalidateOnAnimation(ParallaxToolbarLayout.this);
-                }
-                if (floatingToolbarTitle != null) {
-                    int height = getHeight();
-                    int minHeight = getMinimumHeight();
-                    titleTranslationX = (float) (height - minHeight - insetTop + currentOffset) / (height - minHeight - insetTop);
-                }
             }
+            updateScrimVisibility();
+            final int insetTop = lastInsets != null ? lastInsets.getSystemWindowInsetTop() : 0;
+            if (statusBarScrim != null && insetTop > 0) {
+                ViewCompat.postInvalidateOnAnimation(ParallaxToolbarLayout.this);
+            }
+            if (floatingToolbarTitle != null) {
+                int height = getHeight();
+                int minHeight = getMinimumHeight();
+                titleTranslationX = (float) (height - minHeight - insetTop + currentOffset) / (height - minHeight - insetTop);
+            }
+
         }
     }
 }
