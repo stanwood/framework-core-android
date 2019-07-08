@@ -76,24 +76,20 @@ class InsetLayout @JvmOverloads constructor(context: Context, attrs: AttributeSe
         }
     }
 
-    override fun generateLayoutParams(attrs: AttributeSet): LayoutParams {
-        return LayoutParams(context, attrs)
-    }
+    override fun generateLayoutParams(attrs: AttributeSet) = LayoutParams(context, attrs)
 
-    override fun generateDefaultLayoutParams(): LayoutParams {
-        return LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT, Gravity.BOTTOM)
-    }
 
-    override fun generateLayoutParams(p: ViewGroup.LayoutParams): ViewGroup.LayoutParams {
-        return LayoutParams(p)
-    }
+    override fun generateDefaultLayoutParams() =
+        LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT, Gravity.BOTTOM)
 
-    override fun checkLayoutParams(p: ViewGroup.LayoutParams): Boolean {
-        return p is LayoutParams
-    }
+
+    override fun generateLayoutParams(p: ViewGroup.LayoutParams): ViewGroup.LayoutParams = LayoutParams(p)
+
+
+    override fun checkLayoutParams(p: ViewGroup.LayoutParams) = p is LayoutParams
+
 
     class LayoutParams : FrameLayout.LayoutParams {
-
         constructor(c: Context, attrs: AttributeSet) : super(c, attrs) {
             if (gravity == UNSPECIFIED_GRAVITY) {
                 gravity = Gravity.BOTTOM
@@ -102,9 +98,8 @@ class InsetLayout @JvmOverloads constructor(context: Context, attrs: AttributeSe
 
         constructor(width: Int, height: Int, gravity: Int) : super(width, height, gravity)
 
-        constructor(width: Int, height: Int) : super(width, height) {}
+        constructor(width: Int, height: Int) : super(width, height)
 
-        constructor(source: ViewGroup.LayoutParams) : super(source) {}
-
+        constructor(source: ViewGroup.LayoutParams) : super(source)
     }
 }
