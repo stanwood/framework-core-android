@@ -5,12 +5,15 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.forEach
 import io.stanwood.framework.ui.R
+
 
 class InsetLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0, defStyleRes: Int = 0) :
     FrameLayout(context, attrs, defStyle, defStyleRes) {
@@ -71,5 +74,37 @@ class InsetLayout @JvmOverloads constructor(context: Context, attrs: AttributeSe
         if (lastInsets == null) {
             ViewCompat.requestApplyInsets(this)
         }
+    }
+
+    override fun generateLayoutParams(attrs: AttributeSet): LayoutParams {
+        return LayoutParams(context, attrs)
+    }
+
+    override fun generateDefaultLayoutParams(): LayoutParams {
+        return LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT, Gravity.BOTTOM)
+    }
+
+    override fun generateLayoutParams(p: ViewGroup.LayoutParams): ViewGroup.LayoutParams {
+        return LayoutParams(p)
+    }
+
+    override fun checkLayoutParams(p: ViewGroup.LayoutParams): Boolean {
+        return p is LayoutParams
+    }
+
+    class LayoutParams : FrameLayout.LayoutParams {
+
+        constructor(c: Context, attrs: AttributeSet) : super(c, attrs) {
+            if (gravity == UNSPECIFIED_GRAVITY) {
+                gravity = Gravity.BOTTOM
+            }
+        }
+
+        constructor(width: Int, height: Int, gravity: Int) : super(width, height, gravity)
+
+        constructor(width: Int, height: Int) : super(width, height) {}
+
+        constructor(source: ViewGroup.LayoutParams) : super(source) {}
+
     }
 }
