@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.forEach
 import io.stanwood.framework.ui.R
 
 class InsetLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0, defStyleRes: Int = 0) :
@@ -39,20 +40,19 @@ class InsetLayout @JvmOverloads constructor(context: Context, attrs: AttributeSe
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        getChildAt(0)?.let {
-            val inset = lastInsets?.systemWindowInsetTop ?: 0
-            setMeasuredDimension(it.measuredWidth,
-                if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY) {
-                    MeasureSpec.getSize(heightMeasureSpec).apply {
-                        it.measure(
-                            widthMeasureSpec,
-                            MeasureSpec.makeMeasureSpec(this - inset, MeasureSpec.EXACTLY)
-                        )
-                    }
-                } else {
-                    it.measure(widthMeasureSpec, heightMeasureSpec)
-                    it.measuredHeight + inset
-                })
+        val inset = lastInsets?.systemWindowInsetTop ?: 0
+        if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.EXACTLY) {
+            val height = MeasureSpec.getSize(heightMeasureSpec)
+            forEach { it.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(height - inset, MeasureSpec.EXACTLY)) }
+            setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), height)
+        } else {
+            if (childCount > 1) {
+                throw IllegalStateException("Only one child if height == wrap_content")
+            }
+            getChildAt(0)?.let {
+                it.measure(widthMeasureSpec, heightMeasureSpec)
+                setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), it.measuredHeight + inset)
+            }
         }
     }
 
