@@ -223,7 +223,7 @@ public class ParallaxToolbarLayout extends FrameLayout {
         ensureToolbar();
         final int height = MeasureSpec.getSize(heightMeasureSpec);
         final int mode = MeasureSpec.getMode(heightMeasureSpec);
-        // If height is explicit set to 0 measure as wrap content , so insets are not added to height
+        // If height is explicitly set to 0 measure as wrap content , so insets are not added to height
         super.onMeasure(widthMeasureSpec, (height == 0 && mode == MeasureSpec.EXACTLY) ? MeasureSpec.UNSPECIFIED : heightMeasureSpec);
         LayoutParams lp = (LayoutParams) getChildAt(0).getLayoutParams();
         if (lp.getParallaxMode() == COLLAPSE_MODE_BELOW_TOOLBAR) {
