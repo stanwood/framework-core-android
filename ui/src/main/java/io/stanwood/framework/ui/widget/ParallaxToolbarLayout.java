@@ -6,14 +6,13 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-
-import com.google.android.material.appbar.AppBarLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +21,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
+
+import com.google.android.material.appbar.AppBarLayout;
+
 import io.stanwood.framework.ui.R;
 
 
@@ -37,6 +39,7 @@ public class ParallaxToolbarLayout extends FrameLayout {
     WindowInsetsCompat lastInsets;
     Drawable statusBarScrim;
     Drawable contentScrim;
+    boolean isRestorePending;
     private int maxTitleTranslationX;
     private float titleTranslationX = 0;
     private boolean refreshToolbar = true;
@@ -140,6 +143,12 @@ public class ParallaxToolbarLayout extends FrameLayout {
         return insets.consumeSystemWindowInsets();
     }
 
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        super.onRestoreInstanceState(state);
+        isRestorePending = true;
+    }
+
     private boolean isToolbarChild(View child) {
         return child == toolbarLayout;
     }
@@ -212,13 +221,14 @@ public class ParallaxToolbarLayout extends FrameLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         ensureToolbar();
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        final int height = MeasureSpec.getSize(heightMeasureSpec);
+        final int mode = MeasureSpec.getMode(heightMeasureSpec);
+        // If height is explicitly set to 0 measure as wrap content , so insets are not added to height
+        super.onMeasure(widthMeasureSpec, (height == 0 && mode == MeasureSpec.EXACTLY) ? MeasureSpec.UNSPECIFIED : heightMeasureSpec);
         LayoutParams lp = (LayoutParams) getChildAt(0).getLayoutParams();
         if (lp.getParallaxMode() == COLLAPSE_MODE_BELOW_TOOLBAR) {
             setMeasuredDimension(getMeasuredWidth(), getMeasuredHeight() + toolbarLayout.getMeasuredHeight());
         }
-
-        final int mode = MeasureSpec.getMode(heightMeasureSpec);
         final int topInset = lastInsets != null ? lastInsets.getSystemWindowInsetTop() : 0;
         if (mode == MeasureSpec.UNSPECIFIED && topInset > 0) {
             // If we have a top inset and we're set to wrap_content height make sure top inset is added
@@ -256,11 +266,13 @@ public class ParallaxToolbarLayout extends FrameLayout {
         if (toolbarLayout != null) {
             setMinimumHeight(getHeightWithMargins(toolbarLayout));
         }
-        updateScrimVisibility();
+        if (!isRestorePending) {
+            updateScrimVisibility();
+        }
     }
 
     public void setScrimsShown(boolean shown) {
-        setScrimsShown(shown, ViewCompat.isLaidOut(this) && !isInEditMode());
+        setScrimsShown(shown, !isRestorePending && ViewCompat.isLaidOut(this) && !isInEditMode());
     }
 
     public void setScrimsShown(boolean shown, boolean animate) {
@@ -508,7 +520,6 @@ public class ParallaxToolbarLayout extends FrameLayout {
         @Override
         public void onOffsetChanged(AppBarLayout layout, int verticalOffset) {
             currentOffset = verticalOffset;
-
             for (int size = getChildCount(), i = 0; i < size; i++) {
                 final View child = getChildAt(i);
                 final ViewOffsetHelper offsetHelper = getViewOffsetHelper(child);
@@ -531,18 +542,18 @@ public class ParallaxToolbarLayout extends FrameLayout {
                         break;
                     }
                 }
-                updateScrimVisibility();
-                final int insetTop = lastInsets != null ? lastInsets.getSystemWindowInsetTop() : 0;
-                if (statusBarScrim != null && insetTop > 0) {
-                    ViewCompat.postInvalidateOnAnimation(ParallaxToolbarLayout.this);
-                }
-                if (floatingToolbarTitle != null) {
-                    int height = getHeight();
-                    int minHeight = getMinimumHeight();
-                    titleTranslationX = (float) (height - minHeight - insetTop + currentOffset) / (height - minHeight - insetTop);
-                }
             }
+            updateScrimVisibility();
+            final int insetTop = lastInsets != null ? lastInsets.getSystemWindowInsetTop() : 0;
+            if (statusBarScrim != null && insetTop > 0) {
+                ViewCompat.postInvalidateOnAnimation(ParallaxToolbarLayout.this);
+            }
+            if (floatingToolbarTitle != null) {
+                int height = getHeight();
+                int minHeight = getMinimumHeight();
+                titleTranslationX = (float) (height - minHeight - insetTop + currentOffset) / (height - minHeight - insetTop);
+            }
+            isRestorePending = false;
         }
     }
 }
-
